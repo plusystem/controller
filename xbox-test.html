@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-bs-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تست دسته Xbox | پلاس سیستم</title>
+
+<link id="bootstrap-css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+<link rel="stylesheet" href="css/plussystem-theme.css">
+
+<style>
+/* ========== استایل اختصاصی Xbox Test ========== */
+.xb-section {
+  padding: 20px 0;
+}
+
+.xb-hero {
+  text-align: center;
+  padding: 40px 20px 20px;
+}
+.xb-hero h1 {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 900;
+  margin-bottom: 12px;
+  background: linear-gradient(90deg, #00ff88 0%, #00e5ff 50%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: ps-shine 4s linear infinite;
+}
+.xb-hero p {
+  color: var(--ps-text-muted);
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: 1rem;
+}
+
+/* ---- کارت وضعیت اتصال ---- */
+.xb-status-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px;
+  background: var(--ps-card);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius);
+  margin-bottom: 24px;
+  transition: var(--ps-trans);
+}
+.xb-status-card.connected {
+  border-color: var(--ps-success);
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
+}
+.xb-status-icon {
+  width: 58px; height: 58px;
+  border-radius: 14px;
+  display: grid; place-items: center;
+  font-size: 1.5rem;
+  background: rgba(0, 229, 255, 0.12);
+  color: var(--ps-cyan);
+  flex-shrink: 0;
+  transition: var(--ps-trans);
+}
+.xb-status-card.connected .xb-status-icon {
+  background: rgba(0, 255, 136, 0.15);
+  color: var(--ps-success);
+  box-shadow: 0 0 20px var(--ps-success-glow);
+}
+.xb-status-text { flex: 1; min-width: 0; }
+.xb-status-text h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--ps-text);
+}
+.xb-status-text p {
+  color: var(--ps-text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+  word-break: break-word;
+}
+
+/* ---- گرید اصلی ---- */
+.xb-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 992px) {
+  .xb-grid { grid-template-columns: 1fr; }
+}
+
+/* ---- نمایشگر دسته Xbox ---- */
+.xb-controller-stage {
+  padding: 30px 15px;
+  display: grid;
+  place-items: center;
+  min-height: 380px;
+  background: radial-gradient(circle at center, rgba(0, 229, 255, 0.06), transparent 70%);
+  border-radius: var(--ps-radius);
+}
+.xb-controller-svg {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  filter: drop-shadow(0 20px 40px rgba(0, 229, 255, 0.25));
+  animation: ps-float 5s ease-in-out infinite;
+}
+
+/* انیمیشن دکمه‌های فشرده‌شده */
+.xb-controller-svg .xb-btn {
+  transition: filter 0.12s ease, transform 0.12s ease;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.xb-controller-svg .xb-btn.active {
+  filter: drop-shadow(0 0 14px currentColor) brightness(1.7);
+  transform: scale(1.12);
+}
+.xb-controller-svg .xb-stick {
+  transition: transform 0.1s ease-out;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+/* ---- پنل دکمه‌ها ---- */
+.xb-buttons-panel {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.xb-button-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+  gap: 8px;
+}
+
+.xb-btn-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--ps-card-2);
+  border: 1px solid var(--ps-border);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ps-text-muted);
+  transition: var(--ps-trans);
+  cursor: default;
+  user-select: none;
+}
+.xb-btn-chip .xb-btn-name {
+  font-family: 'Courier New', monospace;
+  font-weight: 800;
+}
+.xb-btn-chip .xb-btn-badge {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 0.7rem;
+  border: 1.5px solid var(--ps-border);
+  color: var(--ps-text-dim);
+  transition: var(--ps-trans);
+  flex-shrink: 0;
+}
+.xb-btn-chip.pressed {
+  border-color: var(--ps-cyan);
+  color: var(--ps-cyan);
+  background: rgba(0, 229, 255, 0.08);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+.xb-btn-chip.pressed .xb-btn-badge {
+  background: var(--ps-success);
+  border-color: var(--ps-success);
+  color: #001a0f;
+  box-shadow: 0 0 10px var(--ps-success-glow);
+}
+.xb-btn-chip.tested {
+  border-color: rgba(0, 255, 136, 0.4);
+}
+.xb-btn-chip.tested .xb-btn-badge {
+  background: rgba(0, 255, 136, 0.15);
+  border-color: var(--ps-success);
+  color: var(--ps-success);
+}
+
+/* رنگ‌های اختصاصی دکمه‌های Xbox */
+.xb-chip-a { color: #00ff88; }
+.xb-chip-b { color: #ff3860; }
+.xb-chip-x { color: #00e5ff; }
+.xb-chip-y { color: #ffb800; }
+
+/* ---- تریگرها ---- */
+.xb-triggers {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--ps-card-2);
+  border: 1px solid var(--ps-border);
+  border-radius: 12px;
+}
+.xb-trigger-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.xb-trigger-label {
+  font-family: 'Courier New', monospace;
+  font-weight: 800;
+  color: var(--ps-cyan);
+  width: 30px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+.xb-trigger-bar-wrap {
+  flex: 1;
+  height: 12px;
+  background: rgba(139, 92, 246, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--ps-border);
+}
+.xb-trigger-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--ps-primary), var(--ps-cyan));
+  border-radius: 8px;
+  transition: width 0.06s linear;
+}
+.xb-trigger-value {
+  font-family: 'Courier New', monospace;
+  font-size: 0.82rem;
+  color: var(--ps-text-muted);
+  min-width: 40px;
+  text-align: left;
+}
+
+/* ---- آنالوگ‌ها ---- */
+.xb-sticks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px;
+  background: var(--ps-card-2);
+  border: 1px solid var(--ps-border);
+  border-radius: 12px;
+}
+.xb-stick-box {
+  text-align: center;
+}
+.xb-stick-box canvas {
+  width: 100%;
+  max-width: 160px;
+  border-radius: 12px;
+  background: rgba(0, 229, 255, 0.04);
+  border: 1px solid var(--ps-border);
+}
+.xb-stick-label {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ps-text-muted);
+}
+.xb-stick-values {
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem;
+  color: var(--ps-cyan);
+  margin-top: 4px;
+}
+.xb-stick-drift {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.xb-stick-drift.ok { color: var(--ps-success); }
+.xb-stick-drift.warn { color: var(--ps-warning); }
+.xb-stick-drift.bad { color: var(--ps-danger); }
+
+/* ---- دکمه‌های عملیات ---- */
+.xb-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 480px) {
+  .xb-actions { grid-template-columns: 1fr; }
+}
+
+/* ---- پیشرفت تست ---- */
+.xb-progress-wrap {
+  padding: 14px 16px;
+  background: var(--ps-card-2);
+  border: 1px solid var(--ps-border);
+  border-radius: 12px;
+}
+.xb-progress-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: var(--ps-text-muted);
+  font-weight: 600;
+}
+.xb-progress-header span:last-child {
+  color: var(--ps-cyan);
+  font-family: 'Courier New', monospace;
+}
+.xb-progress-bar-wrap {
+  height: 10px;
+  background: rgba(139, 92, 246, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--ps-border);
+}
+.xb-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--ps-primary), var(--ps-cyan), var(--ps-success));
+  background-size: 200% auto;
+  border-radius: 8px;
+  transition: width 0.3s ease;
+  animation: ps-shine 3s linear infinite;
+}
+
+/* ---- هشدارها ---- */
+.xb-hint {
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--ps-border);
+  background: rgba(0, 229, 255, 0.05);
+  color: var(--ps-text-muted);
+  font-size: 0.87rem;
+  line-height: 1.8;
+}
+.xb-hint i {
+  color: var(--ps-cyan);
+  margin-left: 6px;
+}
+
+/* انیمیشن float برای SVG (اگر در CSS اصلی نبود) */
+@keyframes ps-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes ps-shine {
+  to { background-position: 200% center; }
+}
+
+/* بج دکمه‌های تست */
+.xb-badge-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--ps-text-dim);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+</style>
+</head>
+<body>
+
+<!-- ======== نوار بالا ======== -->
+<nav class="navbar navbar-expand-md ps-navbar">
+  <div class="container-fluid">
+    <a class="navbar-brand ps-brand" href="index.html">
+      <span class="ps-brand-icon"><i class="fas fa-gamepad"></i></span>
+      <span class="ps-brand-text">پلاس سیستم</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#xbNav" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="xbNav">
+      <ul class="navbar-nav align-items-center gap-2">
+        <li class="nav-item">
+          <a class="nav-link ps-nav-link" href="index.html">
+            <i class="fas fa-sliders-h"></i>&nbsp;<span>کالیبراسیون PS</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link ps-nav-link" href="https://PluSystem.ir">
+            <i class="fas fa-store"></i>&nbsp;<span>فروشگاه</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link ps-nav-link" href="https://PluSystem46.ir">
+            <i class="fas fa-tools"></i>&nbsp;<span>خدمات</span>
+          </a>
+        </li>
+        <li class="nav-item align-items-center d-flex ms-2">
+          <button class="ps-theme-toggle" onclick="psToggleTheme()" title="تغییر تم" type="button">
+            <i class="fas fa-moon" id="psThemeIcon"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- ======== هدر ======== -->
+  <section class="xb-hero">
+    <div class="ps-hero-badge">
+      <span class="ps-dot"></span>
+      <span>ابزار آنلاین • تست سلامت</span>
+    </div>
+    <h1>تست دسته Xbox</h1>
+    <p>
+      ابزار بررسی سلامت دکمه‌ها، آنالوگ‌ها، تریگرها و موتور لرزش دسته‌های Xbox.
+      تمام تست‌ها در مرورگر و بدون نصب نرم‌افزار انجام می‌شوند.
+    </p>
+  </section>
+
+  <!-- ======== وضعیت اتصال ======== -->
+  <div id="xbStatus" class="xb-status-card">
+    <div class="xb-status-icon" id="xbStatusIcon">
+      <i class="fas fa-plug"></i>
+    </div>
+    <div class="xb-status-text">
+      <h3 id="xbStatusTitle">دسته Xbox متصل نیست</h3>
+      <p id="xbStatusDesc">دسته را با کابل USB یا بلوتوث متصل کنید و یکی از دکمه‌های آن را فشار دهید</p>
+    </div>
+    <button id="xbConnectBtn" type="button" class="btn ps-btn ps-btn-primary" onclick="xbEnable()">
+      <i class="fas fa-search"></i> جستجوی دسته
+    </button>
+  </div>
+
+  <!-- ======== محتوای اصلی ======== -->
+  <div id="xbMain" class="xb-grid" style="display:none;">
+
+    <!-- ستون چپ: SVG + تریگرها + آنالوگ‌ها -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+      <!-- SVG دسته Xbox -->
+      <div class="ps-card">
+        <div class="ps-card-header">
+          <i class="fas fa-gamepad"></i>
+          <span>نمایش زنده دسته</span>
+          <span class="ms-auto" style="font-size:0.78rem;color:var(--ps-text-dim);font-family:monospace;" id="xbModelName">—</span>
+        </div>
+        <div class="xb-controller-stage">
+          <svg class="xb-controller-svg" viewBox="0 0 600 420" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="xbBody" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1e2238"/>
+                <stop offset="100%" stop-color="#0f1122"/>
+              </linearGradient>
+              <radialGradient id="xbStickGrad">
+                <stop offset="0%" stop-color="#00e5ff"/>
+                <stop offset="100%" stop-color="#8b5cf6"/>
+              </radialGradient>
+            </defs>
+
+            <!-- LT / RT (پشت) -->
+            <path id="xb-lt" class="xb-btn" style="color:#8b5cf6"
+                  d="M 165 85 Q 145 55 155 30 Q 180 22 200 45 Q 210 70 205 95 Z"
+                  fill="#1a1a30" stroke="#8b5cf6" stroke-width="1.5"/>
+            <text x="180" y="68" text-anchor="middle" fill="#8b5cf6" font-size="11" font-weight="800" font-family="monospace">LT</text>
+
+            <path id="xb-rt" class="xb-btn" style="color:#8b5cf6"
+                  d="M 435 85 Q 455 55 445 30 Q 420 22 400 45 Q 390 70 395 95 Z"
+                  fill="#1a1a30" stroke="#8b5cf6" stroke-width="1.5"/>
+            <text x="420" y="68" text-anchor="middle" fill="#8b5cf6" font-size="11" font-weight="800" font-family="monospace">RT</text>
+
+            <!-- بدنه -->
+            <path d="M 195 100 
+                     Q 235 65 300 65 
+                     Q 365 65 405 100
+                     Q 460 135 480 210
+                     Q 495 275 470 335
+                     Q 445 380 395 375
+                     Q 340 370 315 320
+                     Q 300 295 285 320
+                     Q 260 370 205 375
+                     Q 155 380 130 335
+                     Q 105 275 120 210
+                     Q 140 135 195 100 Z"
+                  fill="url(#xbBody)" stroke="#8b5cf6" stroke-width="2" stroke-opacity="0.6"/>
+
+            <!-- LB / RB (شانه) -->
+            <path id="xb-lb" class="xb-btn" style="color:#00e5ff"
+                  d="M 195 100 Q 225 85 260 82 L 268 100 Q 235 102 210 115 Z"
+                  fill="#1a1a30" stroke="#00e5ff" stroke-width="1.5"/>
+            <text x="230" y="102" text-anchor="middle" fill="#00e5ff" font-size="9" font-weight="800" font-family="monospace">LB</text>
+
+            <path id="xb-rb" class="xb-btn" style="color:#00e5ff"
+                  d="M 405 100 Q 375 85 340 82 L 332 100 Q 365 102 390 115 Z"
+                  fill="#1a1a30" stroke="#00e5ff" stroke-width="1.5"/>
+            <text x="370" y="102" text-anchor="middle" fill="#00e5ff" font-size="9" font-weight="800" font-family="monospace">RB</text>
+
+            <!-- دکمه Guide (Xbox) -->
+            <g id="xb-guide" class="xb-btn" style="color:#00ff88">
+              <circle cx="300" cy="130" r="16" fill="#0f1122" stroke="#00ff88" stroke-width="2"/>
+              <circle cx="300" cy="130" r="7" fill="#00ff88" opacity="0.6"/>
+            </g>
+
+            <!-- دکمه View (سمت چپ Guide) -->
+            <g id="xb-view" class="xb-btn" style="color:#8a90b8">
+              <circle cx="255" cy="165" r="10" fill="#0f1122" stroke="#8a90b8" stroke-width="1.5"/>
+              <text x="255" y="170" text-anchor="middle" fill="#8a90b8" font-size="9" font-weight="800" font-family="monospace">V</text>
+            </g>
+
+            <!-- دکمه Menu (سمت راست Guide) -->
+            <g id="xb-menu" class="xb-btn" style="color:#8a90b8">
+              <circle cx="345" cy="165" r="10" fill="#0f1122" stroke="#8a90b8" stroke-width="1.5"/>
+              <text x="345" y="170" text-anchor="middle" fill="#8a90b8" font-size="9" font-weight="800" font-family="monospace">M</text>
+            </g>
+
+            <!-- آنالوگ چپ -->
+            <g id="xb-ls" class="xb-stick" transform="translate(190, 200)">
+              <circle cx="0" cy="0" r="34" fill="#0f1122" stroke="#8b5cf6" stroke-width="2"/>
+              <circle cx="0" cy="0" r="24" fill="url(#xbStickGrad)" opacity="0.85"/>
+              <circle cx="0" cy="0" r="10" fill="#0f1122"/>
+              <circle cx="0" cy="0" r="4" fill="#00e5ff"/>
+            </g>
+
+            <!-- آنالوگ راست -->
+            <g id="xb-rs" class="xb-stick" transform="translate(410, 200)">
+              <circle cx="0" cy="0" r="34" fill="#0f1122" stroke="#8b5cf6" stroke-width="2"/>
+              <circle cx="0" cy="0" r="24" fill="url(#xbStickGrad)" opacity="0.85"/>
+              <circle cx="0" cy="0" r="10" fill="#0f1122"/>
+              <circle cx="0" cy="0" r="4" fill="#00e5ff"/>
+            </g>
+
+            <!-- D-Pad (پایین چپ) -->
+            <g id="xb-dpad" transform="translate(190, 315)">
+              <g id="xb-up" class="xb-btn" style="color:#00e5ff">
+                <rect x="-9" y="-30" width="18" height="18" rx="3" fill="#1a1a30" stroke="#00e5ff" stroke-width="1.4"/>
+                <path d="M -5 -16 L 0 -24 L 5 -16 Z" fill="#00e5ff"/>
+              </g>
+              <g id="xb-down" class="xb-btn" style="color:#00e5ff">
+                <rect x="-9" y="12" width="18" height="18" rx="3" fill="#1a1a30" stroke="#00e5ff" stroke-width="1.4"/>
+                <path d="M -5 18 L 0 26 L 5 18 Z" fill="#00e5ff"/>
+              </g>
+              <g id="xb-left" class="xb-btn" style="color:#00e5ff">
+                <rect x="-30" y="-9" width="18" height="18" rx="3" fill="#1a1a30" stroke="#00e5ff" stroke-width="1.4"/>
+                <path d="M -16 -5 L -24 0 L -16 5 Z" fill="#00e5ff"/>
+              </g>
+              <g id="xb-right" class="xb-btn" style="color:#00e5ff">
+                <rect x="12" y="-9" width="18" height="18" rx="3" fill="#1a1a30" stroke="#00e5ff" stroke-width="1.4"/>
+                <path d="M 16 -5 L 24 0 L 16 5 Z" fill="#00e5ff"/>
+              </g>
+              <circle cx="0" cy="0" r="5" fill="#0f1122"/>
+            </g>
+
+            <!-- دکمه‌های فیس A/B/X/Y -->
+            <g transform="translate(410, 315)">
+              <!-- Y (بالا، زرد) -->
+              <g id="xb-y" class="xb-btn" style="color:#ffb800">
+                <circle cx="0" cy="-30" r="16" fill="#1a1a30" stroke="#ffb800" stroke-width="2"/>
+                <text x="0" y="-24" text-anchor="middle" fill="#ffb800" font-size="14" font-weight="900" font-family="Arial">Y</text>
+              </g>
+              <!-- B (راست، قرمز) -->
+              <g id="xb-b" class="xb-btn" style="color:#ff3860">
+                <circle cx="30" cy="0" r="16" fill="#1a1a30" stroke="#ff3860" stroke-width="2"/>
+                <text x="30" y="5" text-anchor="middle" fill="#ff3860" font-size="14" font-weight="900" font-family="Arial">B</text>
+              </g>
+              <!-- A (پایین، سبز) -->
+              <g id="xb-a" class="xb-btn" style="color:#00ff88">
+                <circle cx="0" cy="30" r="16" fill="#1a1a30" stroke="#00ff88" stroke-width="2"/>
+                <text x="0" y="35" text-anchor="middle" fill="#00ff88" font-size="14" font-weight="900" font-family="Arial">A</text>
+              </g>
+              <!-- X (چپ، آبی) -->
+              <g id="xb-x" class="xb-btn" style="color:#00e5ff">
+                <circle cx="-30" cy="0" r="16" fill="#1a1a30" stroke="#00e5ff" stroke-width="2"/>
+                <text x="-30" y="5" text-anchor="middle" fill="#00e5ff" font-size="14" font-weight="900" font-family="Arial">X</text>
+              </g>
+            </g>
+
+            <!-- برچسب LS/RS -->
+            <text x="190" y="260" text-anchor="middle" fill="#8a90b8" font-size="9" font-weight="700" font-family="monospace">LS</text>
+            <text x="410" y="260" text-anchor="middle" fill="#8a90b8" font-size="9" font-weight="700" font-family="monospace">RS</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- تریگرها -->
+      <div class="ps-card">
+        <div class="ps-card-header">
+          <i class="fas fa-gauge-high"></i>
+          <span>تریگرها</span>
+        </div>
+        <div class="xb-triggers">
+          <div class="xb-trigger-row">
+            <span class="xb-trigger-label">LT</span>
+            <div class="xb-trigger-bar-wrap">
+              <div class="xb-trigger-bar" id="xb-lt-bar"></div>
+            </div>
+            <span class="xb-trigger-value" id="xb-lt-val">0.00</span>
+          </div>
+          <div class="xb-trigger-row">
+            <span class="xb-trigger-label">RT</span>
+            <div class="xb-trigger-bar-wrap">
+              <div class="xb-trigger-bar" id="xb-rt-bar"></div>
+            </div>
+            <span class="xb-trigger-value" id="xb-rt-val">0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- آنالوگ‌ها -->
+      <div class="ps-card">
+        <div class="ps-card-header">
+          <i class="fas fa-arrows-alt"></i>
+          <span>آنالوگ‌ها و تشخیص دریفت</span>
+        </div>
+        <div class="xb-sticks">
+          <div class="xb-stick-box">
+            <canvas id="xb-canvas-l" width="160" height="160"></canvas>
+            <div class="xb-stick-label">آنالوگ چپ (LS)</div>
+            <div class="xb-stick-values" id="xb-ls-vals">X: 0.00 | Y: 0.00</div>
+            <div class="xb-stick-drift ok" id="xb-ls-drift">✓ بدون دریفت</div>
+          </div>
+          <div class="xb-stick-box">
+            <canvas id="xb-canvas-r" width="160" height="160"></canvas>
+            <div class="xb-stick-label">آنالوگ راست (RS)</div>
+            <div class="xb-stick-values" id="xb-rs-vals">X: 0.00 | Y: 0.00</div>
+            <div class="xb-stick-drift ok" id="xb-rs-drift">✓ بدون دریفت</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ستون راست: دکمه‌ها + عملیات -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+      <!-- پیشرفت تست -->
+      <div class="ps-card">
+        <div class="ps-card-header">
+          <i class="fas fa-list-check"></i>
+          <span>پیشرفت تست دکمه‌ها</span>
+        </div>
+        <div class="xb-buttons-panel">
+          <div class="xb-progress-wrap">
+            <div class="xb-progress-header">
+              <span>دکمه‌های تست‌شده</span>
+              <span id="xb-progress-text">0 / 17</span>
+            </div>
+            <div class="xb-progress-bar-wrap">
+              <div class="xb-progress-bar" id="xb-progress-bar"></div>
+            </div>
+          </div>
+
+          <div class="xb-hint">
+            <i class="fas fa-info-circle"></i>
+            هر دکمه‌ای را روی دسته فشار دهید — کارت آن سبز می‌شود. دکمه‌ای که یک بار سبز شد، در مجموعه تست‌شده‌ها ذخیره می‌شود.
+          </div>
+        </div>
+      </div>
+
+      <!-- دکمه‌های فیس -->
+      <div class="ps-card">
+        <div class="ps-card-header">
+          <i class="fas fa-circle-nodes"></i>
+          <span>دکمه‌های فیس</span>
+        </div>
+        <div class="xb-buttons-panel">
+          <div class="xb-button-row">
+            <div class="xb-btn-chip xb-chip-a" data-btn="a" id="chip-a">
+              <span class="xb-btn-name">A</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip xb-chip-b" data-btn="b" id="chip-b">
+              <span class="xb-btn-name">B</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip xb-chip-x" data-btn="x" id="chip-x">
+              <span class="xb-btn-name">X</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip xb-chip-y" data-btn="y" id="chip-y">
+              <span class="xb-btn-name">Y</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- شانه‌ها و تریگرها -->
+      <div class="ps-card">
+        <div class="ps-card-header">
+          <i class="fas fa-hand"></i>
+          <span>شانه‌ها و تریگرها</span>
+        </div>
+        <div class="xb-buttons-panel">
+          <div class="xb-button-row">
+            <div class="xb-btn-chip" data-btn="lb" id="chip-lb">
+              <span class="xb-btn-name">LB</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip" data-btn="rb" id="chip-rb">
+              <span class="xb-btn-name">RB</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip" data-btn="lt" id="chip-lt">
+              <span class="xb-btn-name">LT</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip" data-btn="rt" id="chip-rt">
+              <span class="xb-btn-name">RT</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- D-Pad -->
+      <div class="ps-card">
+        <div class="ps-card-header">
+          <i class="fas fa-up-down-left-right"></i>
+          <span>دکمه‌های جهت‌دار</span>
+        </div>
+        <div class="xb-buttons-panel">
+          <div class="xb-button-row">
+            <div class="xb-btn-chip" data-btn="up" id="chip-up">
+              <span class="xb-btn-name">↑</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip" data-btn="down" id="chip-down">
+              <span class="xb-btn-name">↓</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip" data-btn="left" id="chip-left">
+              <span class="xb-btn-name">←</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip" data-btn="right" id="chip-right">
+              <span class="xb-btn-name">→</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- سایر دکمه‌ها -->
+      <div class="ps-card">
+        <div class="ps-card-header">
+          <i class="fas fa-ellipsis"></i>
+          <span>سایر دکمه‌ها</span>
+        </div>
+        <div class="xb-buttons-panel">
+          <div class="xb-button-row">
+            <div class="xb-btn-chip" data-btn="view" id="chip-view">
+              <span class="xb-btn-name">View</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip" data-btn="menu" id="chip-menu">
+              <span class="xb-btn-name">Menu</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip" data-btn="ls" id="chip-ls">
+              <span class="xb-btn-name">LS Press</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip" data-btn="rs" id="chip-rs">
+              <span class="xb-btn-name">RS Press</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+            <div class="xb-btn-chip" data-btn="guide" id="chip-guide">
+              <span class="xb-btn-name">Guide</span>
+              <span class="xb-btn-badge">○</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- عملیات -->
+      <div class="ps-card">
+        <div class="ps-card-header">
+          <i class="fas fa-play"></i>
+          <span>عملیات</span>
+        </div>
+        <div class="xb-buttons-panel">
+          <div class="xb-actions">
+            <button class="btn ps-btn ps-btn-cyan" onclick="xbTestVibration('both')">
+              <i class="fas fa-wave-square"></i> تست لرزش
+            </button>
+            <button class="btn ps-btn ps-btn-primary" onclick="xbTestVibration('heavy')">
+              <i class="fas fa-bolt"></i> لرزش شدید
+            </button>
+            <button class="btn ps-btn ps-btn-ghost" onclick="xbResetTest()">
+              <i class="fas fa-redo"></i> بازنشانی تست
+            </button>
+            <button class="btn ps-btn ps-btn-danger" onclick="xbDisconnect()">
+              <i class="fas fa-power-off"></i> قطع اتصال
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- فوتر -->
+<footer class="ps-footer">
+  <div class="ps-footer-grid">
+    <div class="ps-footer-col">
+      <h4><i class="fas fa-gamepad"></i> پلاس سیستم</h4>
+      <p>ارائه‌دهنده تخصصی خدمات تعمیر، کالیبراسیون و تست دسته‌های بازی.</p>
+    </div>
+    <div class="ps-footer-col">
+      <h4><i class="fas fa-link"></i> لینک‌ها</h4>
+      <a href="index.html"><i class="fas fa-sliders-h"></i> کالیبراسیون PS</a>
+      <a href="https://PluSystem.ir"><i class="fas fa-store"></i> فروشگاه</a>
+      <a href="https://PluSystem46.ir"><i class="fas fa-tools"></i> خدمات</a>
+    </div>
+    <div class="ps-footer-col">
+      <h4><i class="fas fa-phone"></i> تماس با ما</h4>
+      <div class="ps-contact"><span>013-31729085</span><i class="fas fa-phone"></i></div>
+      <div class="ps-contact"><span>0912-4774478</span><i class="fas fa-mobile-alt"></i></div>
+      <div class="ps-contact"><span>0911-2447393</span><i class="fas fa-mobile-alt"></i></div>
+    </div>
+    <div class="ps-footer-col">
+      <h4><i class="fas fa-shield-alt"></i> پشتیبانی</h4>
+      <p style="font-size: .82rem;">شنبه تا پنجشنبه<br>۹:۰۰ تا ۱۹:۰۰</p>
+    </div>
+  </div>
+  <div class="ps-footer-bottom">
+    <p class="mb-0">© ۱۴۰۵ پلاس سیستم — تمامی حقوق محفوظ است.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* ================================================================
+   تست دسته Xbox — Gamepad API
+   ================================================================ */
+'use strict';
+
+// نقشه‌برداری دکمه‌های استاندارد Gamepad API
+const BUTTON_MAP = {
+  a:      0,
+  b:      1,
+  x:      2,
+  y:      3,
+  lb:     4,
+  rb:     5,
+  lt:     6,
+  rt:     7,
+  view:   8,
+  menu:   9,
+  ls:     10,
+  rs:     11,
+  up:     12,
+  down:   13,
+  left:   14,
+  right:  15,
+  guide:  16,
+};
+
+// ترتیب نمایش دکمه‌ها در لیست تست‌شده‌ها
+const TEST_ORDER = ['a','b','x','y','lb','rb','lt','rt','up','down','left','right','view','menu','ls','rs'];
+
+// رنگ‌های SVG برای هایلایت
+const SVG_BTN_IDS = {
+  a: 'xb-a', b: 'xb-b', x: 'xb-x', y: 'xb-y',
+  lb: 'xb-lb', rb: 'xb-rb', lt: 'xb-lt', rt: 'xb-rt',
+  up: 'xb-up', down: 'xb-down', left: 'xb-left', right: 'xb-right',
+  view: 'xb-view', menu: 'xb-menu', guide: 'xb-guide'
+};
+
+// ============ وضعیت ============
+let xbGamepad = null;
+let xbRafId = null;
+let xbTestedButtons = new Set();
+let xbLsDriftWarn = false;
+let xbRsDriftWarn = false;
+let xbLsRestSamples = [];
+let xbRsRestSamples = [];
+
+// ============ فعال‌سازی ============
+function xbEnable() {
+  const pads = Array.from(navigator.getGamepads()).filter(Boolean);
+  
+  if (!pads.length) {
+    xbToast('هیچ دسته‌ای پیدا نشد. دسته را متصل کنید و یک دکمه بزنید.', 'warning');
+    return;
+  }
+  
+  // ترجیح: Xbox
+  let xb = pads.find(p => /xbox|microsoft/i.test(p.id));
+  if (!xb) xb = pads[0]; // اگر Xbox نبود، اولین دسته را می‌گیریم
+  
+  xbGamepad = xb;
+  xbOnConnected();
+}
+
+function xbOnConnected() {
+  if (!xbGamepad) return;
+  
+  // به‌روزرسانی کارت وضعیت
+  const status = document.getElementById('xbStatus');
+  status.classList.add('connected');
+  document.getElementById('xbStatusIcon').innerHTML = '<i class="fas fa-check-circle"></i>';
+  document.getElementById('xbStatusTitle').textContent = 'متصل شد: ' + (xbGamepad.id.split('(')[0].trim() || 'Xbox Controller');
+  document.getElementById('xbStatusDesc').textContent = 
+    (xbGamepad.mapping === 'standard' ? 'نگاشت استاندارد ✓' : 'نگاشت غیراستاندارد ⚠') +
+    ' • ' + (xbGamepad.connected ? 'متصل' : 'قطع');
+  
+  // نمایش پنل اصلی
+  document.getElementById('xbMain').style.display = 'grid';
+  document.getElementById('xbModelName').textContent = xbGamepad.id.substring(0, 40);
+  
+  // شروع حلقه‌ی خواندن
+  if (xbRafId) cancelAnimationFrame(xbRafId);
+  xbLoop();
+}
+
+function xbDisconnect() {
+  if (xbRafId) {
+    cancelAnimationFrame(xbRafId);
+    xbRafId = null;
+  }
+  xbGamepad = null;
+  
+  const status = document.getElementById('xbStatus');
+  status.classList.remove('connected');
+  document.getElementById('xbStatusIcon').innerHTML = '<i class="fas fa-plug"></i>';
+  document.getElementById('xbStatusTitle').textContent = 'دسته Xbox متصل نیست';
+  document.getElementById('xbStatusDesc').textContent = 'دسته را با کابل USB یا بلوتوث متصل کنید و یکی از دکمه‌های آن را فشار دهید';
+  document.getElementById('xbMain').style.display = 'none';
+  
+  // پاک کردن وضعیت‌ها
+  xbResetTest();
+}
+
+// ============ حلقه‌ی اصلی ============
+function xbLoop() {
+  const pads = navigator.getGamepads();
+  xbGamepad = pads[xbGamepad?.index ?? 0];
+  
+  if (!xbGamepad) {
+    xbDisconnect();
+    return;
+  }
+  
+  // --- دکمه‌ها ---
+  for (const [name, idx] of Object.entries(BUTTON_MAP)) {
+    const btn = xbGamepad.buttons[idx];
+    if (!btn) continue;
+    
+    const pressed = btn.pressed || (btn.value > 0.1);
+    const chip = document.getElementById('chip-' + name);
+    const svgEl = document.getElementById(SVG_BTN_IDS[name]);
+    
+    if (chip) {
+      chip.classList.toggle('pressed', pressed);
+      if (pressed && !xbTestedButtons.has(name)) {
+        xbTestedButtons.add(name);
+        chip.classList.add('tested');
+        chip.querySelector('.xb-btn-badge').textContent = '✓';
+        xbUpdateProgress();
+      }
+    }
+    if (svgEl) {
+      svgEl.classList.toggle('active', pressed);
+    }
+  }
+  
+  // --- تریگرها ---
+  const lt = xbGamepad.buttons[6]?.value || 0;
+  const rt = xbGamepad.buttons[7]?.value || 0;
+  document.getElementById('xb-lt-bar').style.width = (lt * 100) + '%';
+  document.getElementById('xb-rt-bar').style.width = (rt * 100) + '%';
+  document.getElementById('xb-lt-val').textContent = lt.toFixed(2);
+  document.getElementById('xb-rt-val').textContent = rt.toFixed(2);
+  
+  // --- آنالوگ‌ها ---
+  const lx = xbGamepad.axes[0] || 0;
+  const ly = xbGamepad.axes[1] || 0;
+  const rx = xbGamepad.axes[2] || 0;
+  const ry = xbGamepad.axes[3] || 0;
+  
+  document.getElementById('xb-ls-vals').textContent = `X: ${lx.toFixed(2)} | Y: ${ly.toFixed(2)}`;
+  document.getElementById('xb-rs-vals').textContent = `X: ${rx.toFixed(2)} | Y: ${ry.toFixed(2)}`;
+  
+  // به‌روزرسانی موقعیت در SVG
+  const svgLs = document.getElementById('xb-ls');
+  const svgRs = document.getElementById('xb-rs');
+  if (svgLs) svgLs.setAttribute('transform', `translate(${190 + lx * 10}, ${200 + ly * 10})`);
+  if (svgRs) svgRs.setAttribute('transform', `translate(${410 + rx * 10}, ${200 + ry * 10})`);
+  
+  // رسم کانواس
+  xbDrawStick('xb-canvas-l', lx, ly, '#00e5ff');
+  xbDrawStick('xb-canvas-r', rx, ry, '#ffb800');
+  
+  // تشخیص دریفت
+  xbCheckDrift(lx, ly, 'l');
+  xbCheckDrift(rx, ry, 'r');
+  
+  xbRafId = requestAnimationFrame(xbLoop);
+}
+
+// ============ رسم آنالوگ ============
+function xbDrawStick(canvasId, x, y, color) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  
+  ctx.clearRect(0, 0, W, H);
+  
+  // دایره پس‌زمینه
+  ctx.strokeStyle = 'rgba(139, 92, 246, 0.3)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(W/2, H/2, W*0.4, 0, Math.PI * 2);
+  ctx.stroke();
+  
+  // خطوط راهنما
+  ctx.strokeStyle = 'rgba(139, 92, 246, 0.15)';
+  ctx.beginPath();
+  ctx.moveTo(0, H/2); ctx.lineTo(W, H/2);
+  ctx.moveTo(W/2, 0); ctx.lineTo(W/2, H);
+  ctx.stroke();
+  
+  // نقطه
+  const px = W/2 + x * W * 0.4;
+  const py = H/2 + y * H * 0.4;
+  
+  const grad = ctx.createRadialGradient(px, py, 0, px, py, 14);
+  grad.addColorStop(0, color);
+  grad.addColorStop(1, 'transparent');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(px, py, 14, 0, Math.PI * 2);
+  ctx.fill();
+  
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(px, py, 5, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// ============ تشخیص دریفت ============
+function xbCheckDrift(x, y, side) {
+  const magnitude = Math.hypot(x, y);
+  const driftEl = document.getElementById('xb-' + side + 's-drift');
+  if (!driftEl) return;
+  
+  // فقط وقتی دسته در حالت سکون است بررسی می‌کنیم
+  if (magnitude < 0.02) {
+    const samples = side === 'l' ? xbLsRestSamples : xbRsRestSamples;
+    samples.push({ x, y });
+    if (samples.length > 30) samples.shift();
+    
+    if (samples.length === 30) {
+      const avgX = samples.reduce((a, s) => a + s.x, 0) / samples.length;
+      const avgY = samples.reduce((a, s) => a + s.y, 0) / samples.length;
+      const restMag = Math.hypot(avgX, avgY);
+      
+      driftEl.className = 'xb-stick-drift ' + (restMag < 0.03 ? 'ok' : restMag < 0.07 ? 'warn' : 'bad');
+      driftEl.textContent = restMag < 0.03 ? '✓ بدون دریفت' :
+                             restMag < 0.07 ? '⚠ دریفت جزئی (' + (restMag*100).toFixed(0) + '%)' :
+                             '✗ دریفت قابل توجه (' + (restMag*100).toFixed(0) + '%)';
+    }
+  } else {
+    // دسته در حال حرکت است — وضعیت را ریست می‌کنیم
+    if (side === 'l') xbLsRestSamples = [];
+    else xbRsRestSamples = [];
+  }
+}
+
+// ============ پیشرفت تست ============
+function xbUpdateProgress() {
+  const tested = TEST_ORDER.filter(b => xbTestedButtons.has(b)).length;
+  const total = TEST_ORDER.length;
+  const pct = (tested / total) * 100;
+  
+  document.getElementById('xb-progress-text').textContent = tested + ' / ' + total;
+  document.getElementById('xb-progress-bar').style.width = pct + '%';
+  
+  if (tested === total) {
+    xbToast('🎉 همه دکمه‌ها با موفقیت تست شدند!', 'success');
+  }
+}
+
+// ============ بازنشانی ============
+function xbResetTest() {
+  xbTestedButtons.clear();
+  xbLsRestSamples = [];
+  xbRsRestSamples = [];
+  document.querySelectorAll('.xb-btn-chip').forEach(chip => {
+    chip.classList.remove('pressed', 'tested');
+    chip.querySelector('.xb-btn-badge').textContent = '○';
+  });
+  document.querySelectorAll('.xb-stick-drift').forEach(el => {
+    el.className = 'xb-stick-drift ok';
+    el.textContent = '✓ بدون دریفت';
+  });
+  xbUpdateProgress();
+  xbToast('تست بازنشانی شد', 'info');
+}
+
+// ============ تست لرزش ============
+async function xbTestVibration(mode) {
+  if (!xbGamepad?.vibrationActuator) {
+    xbToast('این دسته از لرزش پشتیبانی نمی‌کند یا درایور آن را ارائه نمی‌دهد', 'warning');
+    return;
+  }
+  
+  let effect = {
+    startDelay: 0,
+    duration: 500,
+    weakMagnitude: 0.5,
+    strongMagnitude: 0.5,
+  };
+  
+  if (mode === 'heavy') {
+    effect.weakMagnitude = 0;
+    effect.strongMagnitude = 1.0;
+    effect.duration = 700;
+  } else if (mode === 'both') {
+    effect.weakMagnitude = 1.0;
+    effect.strongMagnitude = 1.0;
+    effect.duration = 800;
+  }
+  
+  try {
+    await xbGamepad.vibrationActuator.playEffect('dual-rumble', effect);
+    xbToast('لرزش ارسال شد', 'success');
+  } catch (err) {
+    xbToast('خطا در ارسال لرزش: ' + err.message, 'error');
+  }
+}
+
+// ============ Toast ============
+function xbToast(text, type = 'info') {
+  let t = document.getElementById('xbToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'xbToast';
+    t.style.cssText = `
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      padding: 14px 24px; border-radius: 12px;
+      background: var(--ps-card, #16142f);
+      border: 1px solid var(--ps-border, #8b5cf6);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      display: flex; align-items: center; gap: 12px;
+      font-weight: 600; z-index: 2000;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: 'Vazirmatn', sans-serif;
+      direction: rtl;
+    `;
+    document.body.appendChild(t);
+  }
+  
+  const colors = { success: '#00ff88', warning: '#ffb800', error: '#ff3860', info: '#00e5ff' };
+  const icons = { success: '✓', warning: '⚠', error: '✕', info: 'ℹ' };
+  t.style.color = colors[type] || colors.info;
+  t.style.borderColor = colors[type] || colors.info;
+  t.innerHTML = `<span style="font-size:1.1rem;">${icons[type]}</span><span>${text}</span>`;
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  
+  clearTimeout(window._xbToastTimer);
+  window._xbToastTimer = setTimeout(() => {
+    t.style.transform = 'translateX(-50%) translateY(120px)';
+  }, 3000);
+}
+
+// ============ تغییر تم ============
+function psToggleTheme() {
+  const html = document.documentElement;
+  const icon = document.getElementById('psThemeIcon');
+  if (html.getAttribute('data-bs-theme') === 'dark') {
+    html.setAttribute('data-bs-theme', 'light');
+    icon.className = 'fas fa-sun';
+  } else {
+    html.setAttribute('data-bs-theme', 'dark');
+    icon.className = 'fas fa-moon';
+  }
+}
+
+// ============ اتصال خودکار ============
+window.addEventListener('gamepadconnected', (e) => {
+  if (/xbox|microsoft/i.test(e.gamepad.id) || !xbGamepad) {
+    xbGamepad = e.gamepad;
+    xbOnConnected();
+    xbToast('دسته متصل شد: ' + (e.gamepad.id.split('(')[0].trim() || 'Controller'), 'success');
+  }
+});
+
+window.addEventListener('gamepaddisconnected', (e) => {
+  if (xbGamepad && e.gamepad.index === xbGamepad.index) {
+    xbDisconnect();
+    xbToast('دسته قطع شد', 'warning');
+  }
+});
+</script>
+
+</body>
+</html>
